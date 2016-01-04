@@ -1,0 +1,40 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Cloudformation Stack for finding AMI ID given an AMI Name",
+  "Parameters": {
+      "ImageName": {
+            "Description": "The name of the AMI Image",
+            "Type": "String",
+            "Default": "Golden-Image-Base-01"
+        }
+  },
+  "Resources": {
+    "AMI": {
+      "Type": "Custom::AMI",
+      "Properties": {
+        "ServiceToken": { "Fn::Join": [ "", [
+          "arn:aws:lambda:",
+          { "Ref": "AWS::Region" },
+          ":",
+          { "Ref": "AWS::AccountId" },
+          ":function:findAmiIdRoutine"
+        ] ] },
+        "ImageName": { "Ref": "ImageName" },
+        "StackName": { "Ref" : "AWS::StackName" },
+        "Region" : { "Ref" : "AWS::Region" }
+      }
+    } 
+  },
+
+  "Outputs": {
+    "ImageId": {
+      "Value": {
+        "Fn::GetAtt": [ "AMI", "ImageId" ]
+      },
+      "Description": "AMI Id"
+    },
+    "StackName" : { 
+      "Value" : { "Ref" : "AWS::StackName" },
+      "Description": "Name of the Stack" }
+    }
+}
